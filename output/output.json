@@ -1,0 +1,7 @@
+{
+    "hiveBotId": "testHiveBotId",
+    "executionId": "testExecutionId",
+    "runStatus": "SUCCESSFUL",
+    "botMessage": "Source prepared and uploaded to AuditBoard.",
+    "variableMap": {}
+}

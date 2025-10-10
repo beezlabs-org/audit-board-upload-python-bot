@@ -1,0 +1,9 @@
+git+https://github.com/beezlabs-org/tulip-py-lib.git@1.0.3
+git+https://github.com/beezlabs-org/dms-py-lib@1.0.2
+git+https://github.com/beezlabs-org/rdp-py-lib@1.0.1
+pytest-html~=4.1.1
+pytest~=8.2.1
+path==16.9.0
+playwright~=1.52.0
+PyAutoGUI==0.9.54
+pillow==10.3.0

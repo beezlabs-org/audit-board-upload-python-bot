@@ -1,0 +1,110 @@
+{
+  "hiveBotId": "8cdda32f-d8f3-480c-af93-d51580d31abc",
+  "executionId": "00000000-0000-0000-0000-000000000000",
+  "connectionParams": null,
+  "proposedBotInputs": {
+    "dms_download_url": {
+      "value": "https://dev-tulip.onebacardi.com/api/core/dms/read",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "file_path_signature": {
+      "value": "",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "DMS_identity": {
+      "value": "tulipGeneric",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "auditboard_base_url": {
+      "value": "https://bacardi.auditboardapp.com/workspace/2/controls/control/",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "auditboard_control_code": {
+      "value": "1476",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "auditboard_identity": {
+      "value": "auditboard_identity",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "login_button_xpath": {
+      "value": "(//div[text()='Login with Username / Password'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "username_xpath": {
+      "value": "(//*[@id='identification'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "password_xpath": {
+      "value": "(//*[@id='password'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "submit_xpath": {
+      "value": "(//button[text()='Sign In'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "files_button_xpath": {
+      "value": "(//button[@aria-label='Files'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "upload_input_xpath": {
+      "value": "(//input[@aria-label='Browse Files'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "filename_text_xpath": {
+      "value": "(//div[@class='flex items-start justify-between'])",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "cancel_button_xpath": {
+      "value": "",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "beekeeper_url": {
+      "value": "https://dev-tulip.onebacardi.com",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "local_file_path": {
+      "value": "D:\\Beezlabs Python project\\bac-115-mexican-exception-bot-development\\audit-board-upload-bot-development\\27283197-f86f-3090-aea5-2f2defcd535c_ITAC_RTR006A_2025_10_01_13_59_01.xlsx",
+      "type": 0,
+      "objectTypeName": "",
+      "flowVariable": false
+    },
+    "file_upload_wait": {
+  "value": "30000",
+  "type": 0,
+  "objectTypeName": "",
+  "flowVariable": false
+}
+
+  }
+}
