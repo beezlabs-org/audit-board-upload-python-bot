@@ -1,4 +1,6 @@
 import os
+import re
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse
@@ -84,7 +86,6 @@ class BotLogic(Bot):
             def _val(node):  # safe .value getter
                 return getattr(node, "value", "").strip() if node else ""
 
-
             self._sig_val   = _val(getattr(self.input, "file_path_signature", None))
             self._local_val = _val(getattr(self.input, "local_file_path", None))
             self._use_dms   = bool(self._sig_val)  # prefer DMS when signature present
@@ -108,6 +109,34 @@ class BotLogic(Bot):
                 self.log.info("No file_path_signature provided; will use local_file_path.")
         except Exception as error:
             self.log.error(f"Error in initiating bot: {error}")
+
+    # ------------------------------ Helper: strip DMS signature ------------------------------
+    def _strip_dms_signature(self, filename: str) -> str:
+        """
+        Remove common DMS signature patterns from a filename's stem.
+        - UUIDs: 8-4-4-4-12 hex groups
+        - Long hex blobs: >=32 hex chars
+        Keeps the original extension.
+        """
+        stem, ext = os.path.splitext(filename)
+        clean = stem
+
+        # Remove UUIDs surrounded by separators or edges
+        clean = re.sub(
+            r'(?i)(^|[ _.\-])[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|[ _.\-])',
+            ' ',
+            clean
+        )
+        # Remove long hex tokens (e.g., checksums/signatures)
+        clean = re.sub(r'(?i)(^|[ _.\-])[a-f0-9]{32,}($|[ _.\-])', ' ', clean)
+
+        # Tidy up whitespace/separators
+        clean = re.sub(r'\s+', ' ', clean).strip(' ._-')
+
+        if not clean:
+            clean = 'attachment'
+
+        return f'{clean}{ext}'
 
     # ------------------------------ MAIN ------------------------------
     def main(self):
@@ -134,6 +163,17 @@ class BotLogic(Bot):
                     self.log.info(f"Saved streamed file to {downloaded_path}")
 
                 source_path = downloaded_path
+
+                # --- NEW: make a clean-named copy for upload (removes DMS signature) ---
+                original_name = Path(source_path).name
+                cleaned_name = self._strip_dms_signature(original_name)
+                if cleaned_name != original_name:
+                    upload_path = os.path.join(workdir, cleaned_name)
+                    shutil.copyfile(source_path, upload_path)
+                    self.log.info(f"Using cleaned upload filename: {upload_path}")
+                else:
+                    upload_path = source_path
+
             else:
                 # 2) Use local path from inputs.json
                 raw_path = self._local_val
@@ -148,8 +188,11 @@ class BotLogic(Bot):
                     raise FileNotFoundError(f"Local file not found: {source_path}")
                 self.log.info(f"Using local file: {source_path}")
 
+                # Local files are uploaded with their original name (unchanged)
+                upload_path = source_path
+
             # Upload to AuditBoard
-            ok = self.upload_file_to_auditboard(file_path=source_path)
+            ok = self.upload_file_to_auditboard(file_path=upload_path)
             if not ok:
                 raise RuntimeError("AuditBoard upload failed or timed out.")
 
@@ -168,6 +211,7 @@ class BotLogic(Bot):
 
         url = f"{self.input.auditboard_base_url.value}{self.input.auditboard_control_code.value}"
         self.log.info(f"Navigating to: {url}")
+
         def _sel(selector: str) -> str:
             if selector.startswith(("xpath=", "css=", "text=", "id=")):
                 return selector
@@ -183,7 +227,6 @@ class BotLogic(Bot):
             browser = None
             context = None
             try:
-
                 browser = p.chromium.launch(
                     channel="chrome",  # use the Chrome already on the machine
                     headless=False,
@@ -228,7 +271,6 @@ class BotLogic(Bot):
                         page.locator(upload_sel).click()
                     fc_info.value.set_files(file_path)
 
-
                 # Wait for filename to appear
                 file_upload_wait = self.input.file_upload_wait.value
                 page.wait_for_timeout(float(file_upload_wait))
@@ -238,7 +280,11 @@ class BotLogic(Bot):
                     target_xpath = target_xpath.format(fileName=file_name, filename=file_name)
                     page.wait_for_selector(_sel(target_xpath), state="visible", timeout=timeout_sec * 1000)
                 else:
-                    page.get_by_text(file_name, exact=False).wait_for(timeout=timeout_sec * 1000)
+                    # Use exact match to avoid strict mode collisions with similarly named elements
+                    try:
+                        page.get_by_role("button", name=file_name, exact=True).wait_for(timeout=timeout_sec * 1000)
+                    except Exception:
+                        page.get_by_text(file_name, exact=True).wait_for(timeout=timeout_sec * 1000)
 
                 return True
 
