@@ -239,8 +239,8 @@ class BotLogic(Bot):
                 page.goto(url, wait_until="domcontentloaded", timeout=timeout_sec * 1000)
 
                 # login
-                page.wait_for_selector(_sel(self.input.login_button_xpath.value), state="visible", timeout=timeout_sec * 1000)
-                page.locator(_sel(self.input.login_button_xpath.value)).click()
+                #page.wait_for_selector(_sel(self.input.login_button_xpath.value), state="visible", timeout=timeout_sec * 1000)
+                #page.locator(_sel(self.input.login_button_xpath.value)).click()
 
                 page.wait_for_selector(_sel(self.input.username_xpath.value), state="visible", timeout=timeout_sec * 1000)
                 page.locator(_sel(self.input.username_xpath.value)).fill(user)
